@@ -1,0 +1,54 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+<div class="header-bar">
+    <div>
+        <h1>Hello {{request.user|title}}</h1>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a> {% else %}
+    <a href="{% url 'login' %}">Login</a> {% endif %}
+</div>
+
+
+<div id="search-add-wrapper">
+    <form method="GET" style="display: flex;">
+        <input type='text' name='search-area' placeholder="Search your module" value="{{search_input}}">
+        <input class="button" type="submit" value='Search'>
+    </form>
+    {% if modules|length > 0 %}
+    <a id="add-link" href="{% url 'module-create' %}">&#x2b;</a>
+    {% endif %}
+</div>
+
+
+<!-- Hidden form. Form submits new item positions -->
+<form style="display: none;" method="post">
+    {% csrf_token %}
+    <input type="hidden">
+</form>
+
+<div id="modulelist" class="module-items-wrapper">
+    {% for module in modules %}
+    <div class="module-wrapper" data-position="{{module.pk}}">
+        <div class="module-title">
+            <a href="{% url 'module-update' module.id %}">{{module}}</a> 
+            
+        </div>
+        <div class="module-controls">
+            <a class="delete-link" href="{% url 'module-delete' module.id %}">&#215;</a>
+            <!-- <span class="handle">&nbsp;&#10247;</span> -->
+        </div>
+    </div>
+
+    {% empty %}
+    <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
+        <h3>No new modules are created.</h3>
+        <h3>Create a <a style="text-decoration: none; color: #e53935;" href="{% url 'module-create' %}">New Module</a> ! </h3>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
